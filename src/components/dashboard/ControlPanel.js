@@ -47,7 +47,7 @@ export default function ControlPanel(props) {
     const [products, setProducts] = useState([])
     const [machineId, setMachineId] = useState(-1)
     const [measurementFrequency, setMeasurementFrequency] = useState(0)
-
+    // sensibility: machine2.sensibility,
     useEffect(effect => {
         getAllMachines().then(res => {
             setMachines(res.map(machine2 => {
@@ -56,23 +56,26 @@ export default function ControlPanel(props) {
                     name: machine2.name,
                     status: machine2.status,
                     measurementFrequency: machine2.measurementFrequency,
-                    sensibility: machine2.sensibility,
+                    temperatureSensibility: machine2.sensibility.temperatureSensibility,
+                    nutrientsSensibility: machine2.sensibility.nutrientsSensibility,
+                    humiditySensibility: machine2.sensibility.humiditySensibility,
+                    electrolytesSensibility: machine2.sensibility.electrolytesSensibility,
                     products: machine2.products
                 }
             }))
         })
-        getProducts().then(res => {
-            setProducts(res.map(pr => {
-                return {
-                    machine: pr.smartDevice,
-                    status: pr.status,
-                    temperature: pr.temperature,
-                    nutrientsLevel: pr.nutrientsLevel,
-                    humidityLevel: pr.humidityLevel,
-                    electrolytesLevel: pr.electrolytesLevel
-                }
-            }))
-        })
+        // getProducts().then(res => {
+        //     setProducts(res.map(pr => {
+        //         return {
+        //             machine: pr.smartDevice,
+        //             status: pr.status,
+        //             temperature: pr.temperature,
+        //             nutrientsLevel: pr.nutrientsLevel,
+        //             humidityLevel: pr.humidityLevel,
+        //             electrolytesLevel: pr.electrolytesLevel
+        //         }
+        //     }))
+        // })
     }, []);
 
     const handleChange = (event) => {
@@ -106,24 +109,24 @@ export default function ControlPanel(props) {
                         title={<Title>{t('Machines')}</Title>}
                         columns={[
                             {title: t("Name"), field: "name"},
-                            {title: t("Measurement frequency"), field: "measurementFrequency", editComponent: props1 => (
-                                <input type='number' defaultValue={props1.value} max={24} min={0.5} step={0.5}/>
+                            {title: t("Measurement frequency"), field: "measurementFrequency", editComponent: props => (
+                                <input type='number' onChange={e => props.onChange(e.target.value)} value={props.value} max={24} min={0.5} step={0.5}/>
                                 )
                             },
-                            {title: t("temperatureSensibility"), field: "sensibility.temperatureSensibility", editComponent: props1 => (
-                                <input type='number' defaultValue={props1.value} max={5} min={1} step={0.1}/>
+                            {title: t("temperatureSensibility"), field: "temperatureSensibility", editComponent: props => (
+                                <input type='number' onChange={e => props.onChange(e.target.value)} value={props.value} max={5} min={1} step={0.1}/>
                                 )
                             },
-                            {title: t("nutrientsSensibility"), field: "sensibility.nutrientsSensibility", editComponent: props1 => (
-                                <input type='number' defaultValue={props1.value} max={6} min={1} step={0.1}/>
+                            {title: t("nutrientsSensibility"), field: "nutrientsSensibility", editComponent: props => (
+                                <input type='number' onChange={e => props.onChange(e.target.value)} value={props.value} max={6} min={1} step={0.1}/>
                                 )
                             },
-                            {title: t("humiditySensibility"), field: "sensibility.humiditySensibility", editComponent: props1 => (
-                                <input type='number' defaultValue={props1.value} max={10} min={3} step={0.1}/>
+                            {title: t("humiditySensibility"), field: "humiditySensibility", editComponent: props => (
+                                <input type='number' onChange={e => props.onChange(e.target.value)} value={props.value} max={10} min={3} step={0.1}/>
                                 )
                             },
-                            {title: t("electrolytesSensibility"), field: "sensibility.electrolytesSensibility", editComponent: props1 => (
-                                <input type='number' defaultValue={props1.value} max={5} min={1} step={0.1}/>
+                            {title: t("electrolytesSensibility"), field: "electrolytesSensibility", editComponent: props => (
+                                <input type='number' onChange={e => props.onChange(e.target.value)} value={props.value} max={5} min={1} step={0.1}/>
                                 )
                             },
                             {title: t("status"), field: 'status', editable: "never"}
@@ -132,14 +135,13 @@ export default function ControlPanel(props) {
                         editable={{
                             onRowUpdate: (newData, oldData) =>
                                 new Promise((resolve, reject) => {
-                                    console.log(newData)
                                     updateMachine(oldData.id, {
                                         name: newData.name,
                                         measurementFrequency: newData.measurementFrequency,
-                                        temperatureSensibility: newData.sensibility.temperatureSensibility,
-                                        nutrientsSensibility: newData.sensibility.nutrientsSensibility,
-                                        humiditySensibility: newData.sensibility.humiditySensibility,
-                                        electrolytesSensibility: newData.sensibility.electrolytesSensibility
+                                        temperatureSensibility: newData.temperatureSensibility,
+                                        nutrientsSensibility: newData.nutrientsSensibility,
+                                        humiditySensibility: newData.humiditySensibility,
+                                        electrolytesSensibility: newData.electrolytesSensibility
                                     }).then(res => {
                                         getAllMachines().then(res1 => {
                                             setMachines(res1.map(machine2 => {
@@ -148,7 +150,10 @@ export default function ControlPanel(props) {
                                                     name: machine2.name,
                                                     status: machine2.status,
                                                     measurementFrequency: machine2.measurementFrequency,
-                                                    sensibility: machine2.sensibility,
+                                                    temperatureSensibility: machine2.sensibility.temperatureSensibility,
+                                                    nutrientsSensibility: machine2.sensibility.nutrientsSensibility,
+                                                    humiditySensibility: machine2.sensibility.humiditySensibility,
+                                                    electrolytesSensibility: machine2.sensibility.electrolytesSensibility,
                                                     products: machine2.products
                                                 }
                                             }))
@@ -270,139 +275,5 @@ export default function ControlPanel(props) {
             {/*    </Paper>*/}
             {/*</Grid>*/}
         </Grid>
-        // <Grid container spacing={3}>
-        //     <Grid item xs={12}>
-        //         <Paper className={fixedHeightPaper}>
-        //             <Grid container spacing={1}>
-        //                 <Grid item xs={12} sm={12}>
-        //                     <FormControl variant="filled" className={classes.formControl}>
-        //                         <InputLabel htmlFor="filled-age-native-simple">{t('Machine')}</InputLabel>
-        //                         <Select
-        //                             native
-        //                             value={machineId}
-        //                             onChange={handleChange}
-        //                             inputProps={{
-        //                                 name: 'machine',
-        //                                 id: 'filled-age-native-simple',
-        //                             }}
-        //                         >
-        //                             <option value={-1}>{t('Not selected')}</option>
-        //                             {machines.map(machine1 => {
-        //                                 return <option value={machine1.id}>{machine1.name}</option>
-        //                             })}
-        //                         </Select>
-        //                     </FormControl>
-        //
-        //                 </Grid>
-        //
-        //             </Grid>
-        //         </Paper>
-        //     </Grid>
-        // </Grid>
     )
-    // return (
-    //     <Grid container spacing={3}>
-    //         {/* Chart */}
-    //
-    //         <Grid item xs={12} sm={6}>
-    //             <Paper>
-    //                 <MaterialTable
-    //                     options={{
-    //                         search: false,
-    //                         filtering: false,
-    //                         sorting: false,
-    //                         draggable: false,
-    //                         actionsColumnIndex: 1
-    //                     }}
-    //                     title={<Title>{t('Diseases')}</Title>}
-    //                     columns={[{
-    //                         title: t("Disease name"), field: "disease"
-    //                     }]}
-    //                     data={diseases}
-    //                     actions={[
-    //                         {
-    //                             icon: 'delete',
-    //                             tooltip: t('Delete'),
-    //                             onClick: (event, rowData) => {
-    //                                 UserService.deleteDisease(parseInt(localStorage.getItem("userId")), rowData.disease.toUpperCase()).then(res => {
-    //                                     UserService.getUser(parseInt(localStorage.getItem("userId"))).then(res => {
-    //                                         setDiseases(res.diseases.map(disease => {
-    //                                             let name = disease.toLowerCase();
-    //                                             name = name[0].toUpperCase() + name.slice(1);
-    //                                             return {
-    //                                                 disease: name
-    //                                             }
-    //                                         }))
-    //                                     });
-    //                                 })
-    //                             }
-    //                         },
-    //                         {
-    //                             icon: 'add',
-    //                             tooltip: t('Add'),
-    //                             isFreeAction: true,
-    //                             onClick: (event, rowData) => {
-    //                                 setModalShow(true)
-    //                             }
-    //                         }
-    //                     ]}
-    //                     localization={{
-    //                         header: {
-    //                             actions: t('Actions')
-    //                         },
-    //                         body: {
-    //                             deleteTooltip: t('Delete'),
-    //                             addTooltip: t('Add'),
-    //                             editRow: {
-    //                                 deleteText: t('Delete Row?'),
-    //                                 cancelTooltip: t('Cancel'),
-    //                                 saveTooltip: t('Save')
-    //                             },
-    //                             emptyDataSourceMessage: t('emptyDataSourceMessage')
-    //                         },
-    //                         pagination: {
-    //                             labelRowsSelect: t('Rows'),
-    //                             labelRowsPerPage: t('Rows per page'),
-    //                             firstTooltip: t('First Page'),
-    //                             previousTooltip: t('Previous Page'),
-    //                             nextTooltip: t('Next Page'),
-    //                             lastTooltip: t('Last Page'),
-    //                             labelDisplayedRows: t('Displayed Rows')
-    //                         }
-    //                     }}
-    //                 />
-    //             </Paper>
-    //         </Grid>
-    //         <Grid item xs={12} sm={6}>
-    //             <Paper className={fixedHeightPaper}>
-    //                 <Chart data={heartRate} title={t("Today's pulse rate")} axisY={t("BPM")}/>
-    //             </Paper>
-    //         </Grid>
-    //         <Grid item xs={12} sm={6}>
-    //             <Paper className={fixedHeightPaper}>
-    //                 <Chart data={diastolicPressure} title={t("Today's diastolic pressure")} axisY={t("pressureMMhg")}/>
-    //             </Paper>
-    //         </Grid>
-    //         <Grid item xs={12} sm={6}>
-    //             <Paper className={fixedHeightPaper}>
-    //                 <Chart data={systolicPressure} title={t("Today's systolic pressure")} axisY={t("pressureMMhg")}/>
-    //             </Paper>
-    //         </Grid>
-    //         <Grid item xs={12} sm={6}>
-    //             <Paper className={fixedHeightPaper}>
-    //                 <Chart data={sugar} title={t("Today's sugar level")} axisY={t("sugarMeasurement")}/>
-    //             </Paper>
-    //         </Grid>
-    //         <Grid item xs={12} sm={6}>
-    //             <Paper className={fixedHeightPaper}>
-    //                 <Chart data={temperature} title={t("Today's temperature")} axisY={"℃"}/>
-    //             </Paper>
-    //         </Grid>
-    //         <Grid item xs={12}>
-    //             <Paper className={fixedHeightPaper}>
-    //                 <Chart data={mindActivity} title={t("Today's mind activity")} axisY={t("index")}/>
-    //             </Paper>
-    //         </Grid>
-    //     </Grid>
-    // )
 }
